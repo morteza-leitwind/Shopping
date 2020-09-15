@@ -1,0 +1,99 @@
+﻿@using OnlineShop.Models;
+
+@model IEnumerable<Product>
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Picture)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Picture)
+                </td>
+                <td>
+                    <a onclick="AddToCart(@item.Id)" data-id="@item.Id" class="btn btn-primary text-white">Add To Cart</a>
+                    <a onclick="RemoveFromCart(@item.Id)" data-id="@item.Id" class="btn btn-danger text-white">Remove From Cart</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    function AddToCart(id) {
+        var token = $("[name='__RequestVerificationToken']").val();
+        $.ajax({
+            url: '/Api/Cart/AddToCart',
+            type: "POST",
+            data: JSON.stringify(id),
+            contentType: 'application/json',
+            headers: { "RequestVerificationToken": token },
+            success: function (data) {
+                //console.log(data);
+
+                if (data.isError) {
+                    console.log('error');
+                } else {
+                    console.log('success');
+                }
+            },
+            error: function (error) {
+                console.log("error:" + error);
+
+            }
+        });
+    }
+
+    function RemoveFromCart(id) {
+        var token = $("[name='__RequestVerificationToken']").val();
+        $.ajax({
+            url: '/Api/Cart/' + id,
+            type: "DELETE",
+            //data: JSON.stringify(id),
+            contentType: 'application/json',
+            headers: { "RequestVerificationToken": token },
+            success: function (data) {
+                if (data.isError) {
+                    console.log('error');
+                } else {
+                    console.log('success');
+                }
+            },
+            error: function (error) {
+                console.log("error" + error);
+
+            }
+        });
+    }
+</script>
+
